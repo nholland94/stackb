@@ -1,0 +1,6 @@
+main ( -- r) ::
+  0
+  [1 add]
+  [1 swap sub dup 1 <]
+  100000
+  loop

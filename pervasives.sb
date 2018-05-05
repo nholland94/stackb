@@ -1,0 +1,30 @@
+. :: drop
+drop1 :: drop
+drop2 :: drop drop
+drop3 :: drop drop drop
+drop4 :: drop drop drop drop
+drop5 :: drop drop drop drop drop
+
+@ :: dup
+dup1 :: dup
+dup2 :: dup dup
+dup3 :: dup dup dup
+dup4 :: dup dup dup dup
+dup5 :: dup dup dup dup dup
+
+rot :: rotl
+rot- :: rotr
+
+loop (... (... -- ...) (i -- i b) i -- ...) ::
+  [
+    rot over call
+    [drop4]
+    [[dup rot call swap] keep3 rot- dup call]
+    rot- if
+  ] dup call
+
+# calculate base^exp using a loop (later, this will be a primitive instruction)
+pow (base exp -- n) ::
+  [dup] keep1
+  [over mul] [1 swap sub dup 1 <] rot- loop
+  swap .

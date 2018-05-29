@@ -1,3 +1,3 @@
-S .
-B .
-PKG core_kernel bigarray angstrom
+S c
+B c
+PKG core_kernel bigarray angstrom ppx_deriving.std stdint

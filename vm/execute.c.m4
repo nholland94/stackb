@@ -1,4 +1,4 @@
-include(`m4/foreach.m4')dnl
+include(`m4/iter.m4')dnl
 include(`m4/instructions.m4')dnl
 #include "execute.h"
 #include "common.h"

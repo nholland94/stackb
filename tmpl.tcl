@@ -8,16 +8,31 @@ proc lambda {argl body} {
     set name
 }
 
-proc cache_proc {id body} {
-  variable impl_id "__cache_proc_impl_$id" {}
-  proc $impl_id {} $body
-  proc $id {} "
-    global __proc_cache
-    if {!\[info exists __proc_cache($id)]} {
-      set __proc_cache($id) \[$impl_id]
+proc map_to_string {src_h fn} {
+  variable src
+  array set src $src_h
+
+  foreach key [lsort -dictionary [array names src]] {
+    append str [$fn $key [set src($key)]]
+  }
+
+  return $str
+}
+
+proc filter_dict {src_h fn} {
+  variable el
+  variable dst
+  variable src
+  array set src $src_h
+
+  foreach key [array names src] {
+    set el [set src($key)]
+    if {[$fn $key $el]} {
+      set dst($key) $el
     }
-    return \[set __proc_cache($id)]
-  "
+  }
+
+  return [array get dst]
 }
 
 proc hex_to_dec {hex} {
@@ -28,6 +43,18 @@ proc hex_to_dec {hex} {
 
 proc dec_to_hex {dec} {
   return [format %X $dec]
+}
+
+proc cache_proc {id body} {
+  variable impl_id "__cache_proc_impl_$id" {}
+  proc $impl_id {} $body
+  proc $id {} "
+    global __proc_cache
+    if {!\[info exists __proc_cache($id)]} {
+      set __proc_cache($id) \[$impl_id]
+    }
+    return \[set __proc_cache($id)]
+  "
 }
 
 proc read_file {filename} {
@@ -71,19 +98,9 @@ cache_proc instruction_count {
 }
 
 cache_proc non_reserved_instructions {
-  return [filter [instructions] {name val} {expr [$name != "RESERVED"]}]
-}
-
-proc map_instructions {fn} {
-  variable accum {}
-  variable instrs
-  array set instrs [instructions]
-
-  for {variable val 0} {$val < [instruction_count]} {incr val} {
-    append accum [$fn [set instrs($val)] $val]
-  }
-
-  return $accum
+  return [filter_dict [instructions] [lambda {val name} {
+    return [expr {$name != "RESERVED"}]
+  }]]
 }
 
 ::textutil::expander tmpl

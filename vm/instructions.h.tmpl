@@ -6,8 +6,10 @@
 
 typedef uint8_t instr;
 
-<@ map_ordered [non_reserved_instructions] [lambda {name val} {
-  return "#define $name 0x[dec_to_hex $val]"
-}] @>
+<@
+map_to_string [non_reserved_instructions] [lambda {val name} {
+  return "#define $name 0x[dec_to_hex $val]\n"
+}]
+@>
 
 #endif

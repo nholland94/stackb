@@ -1,0 +1,13 @@
+
+#ifndef __INSTRUCTIONS_H__
+#define __INSTRUCTIONS_H__
+
+#include <stdint.h>
+
+typedef uint8_t instr;
+
+<@ map_ordered [non_reserved_instructions] [lambda {name val} {
+  return "#define $name 0x[dec_to_hex $val]"
+}] @>
+
+#endif
